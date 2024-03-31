@@ -33,24 +33,28 @@ Video Spore Protocol 只是对 Spore Protocol 做了拓展，保持原有的理�
 
 ```rust
 VideoMutant = Cell {
-    output_data: < IF operation == "mint"     THEN RETURN true;
-                   IF operation == "transfer" THEN RETURN <all the Spore Segment Cells exist in the cell_deps>;
-                   IF operation == "melt"     THEN RETURN <all the Spore Segment Cells exist in the inputs> >
+    output_data: <
+        func main() {
+            if operation == "mint"     { exit(0) }
+            if operation == "transfer" { exit(!all_spore_segment_cells_exist_in(Source::CellDep)) >;
+            if operation == "melt"     { exit(!all_spore_segment_cells_exist_in(Source::Input)) >;
+        }
 
-    // # snippet to check if all the Spore Segment Cells exist in the cell_deps:
-    //
-    // segments = filter_cell_deps({
-    //     type: null,
-    //     lock: BindingLifecycleLock{ args: <Spore's type_hash> }
-    // )})
-    // complete_content = segments
-    //     .sort(  |segment| segment.output_data.segment_index)
-    //     .reduce(|segment_data, acc| acc ++ segment.segment_data)
-    // hash_of_complete_content = blake2b(complete_content)
-    //
-    // return hash_of_complete_content == SporeCell.output_data.data_hash
-
-    ...
+        func all_spore_segment_cells_exist_in(source) -> bool {
+            segments = filter_cell_deps(
+                source: source,
+                filter: {
+                    type: null,
+                    lock: BindingLifecycleLock{ args: <Spore's type_hash> }
+                })
+            complete_content = segments
+                .sort(  |segment| segment.output_data.segment_index)
+                .reduce(|segment, acc| acc ++ segment.segment_data)
+            hash_of_complete_content = blake2b(complete_content)
+            
+            return hash_of_complete_content == SporeCell.output_data.data_hash
+        }
+    >
 }
 
 SporeCell = Cell {
@@ -68,7 +72,7 @@ SporeCell = Cell {
 
 ```rust
 BindingLifecycleLock = Script {
-    code: < IF operation == "melt" AND <the corresponding Spore is beening melt THEN RETURN true> >,
+    code: < IF the corresponding Spore is beening melt THEN RETURN true >,
     args: <Spore's type_hash>
 }
 
