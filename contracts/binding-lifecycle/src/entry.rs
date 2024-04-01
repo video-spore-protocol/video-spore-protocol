@@ -18,6 +18,7 @@ pub enum Error {
     LengthNotEnough,
     Encoding,
 
+    // The current cell can be consumed only when melt the target Spore Cell
     NotMeltOperation = 100,
 }
 
@@ -36,6 +37,12 @@ impl From<SysError> for Error {
 
 
 pub fn main() -> Result<(), Error> {
+
+    // The implementation method for Video Spore Protocol using a
+    // binding-lifecycle script involves placing the type_hash of the Spore Cell
+    // into the lock_args of the Spore Segment Cell. This approach enables Spore
+    // Cells to be filtered using the type_script's type_hash.
+
     let spore_type_hash_bytes = load_script()?.args();
     let spore_type_hash = Byte32::new_unchecked(spore_type_hash_bytes.raw_data());
 
@@ -48,7 +55,6 @@ pub fn main() -> Result<(), Error> {
     if spore_output.len() > 0 {
         return Err(Error::NotMeltOperation);
     }
-
 
     let spore_input: Vec<_> = QueryIter::new(load_cell_type, Input)
         .filter(|script_opt| match script_opt {
