@@ -62,7 +62,7 @@ pub fn main() -> Result<(), Error> {
             Some(script) => script.calc_script_hash() == spore_type_hash
         })
         .collect();
-    if spore_input.len() > 0 {
+    if spore_input.len() != 0 {
         return Err(Error::NotMeltOperation);
     }
 
