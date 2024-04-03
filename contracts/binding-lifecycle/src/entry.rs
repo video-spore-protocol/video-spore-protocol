@@ -18,8 +18,8 @@ pub enum Error {
     LengthNotEnough,
     Encoding,
 
-    // The current cell can be consumed only when melt the target Spore Cell
-    NotMeltOperation = 100,
+    ZeroInputSporeMelt = 101,
+    NonZeroOutputSporeMelt = 102,
 }
 
 impl From<SysError> for Error {
@@ -46,6 +46,16 @@ pub fn main() -> Result<(), Error> {
     let spore_type_hash_bytes = load_script()?.args();
     let spore_type_hash = Byte32::new_unchecked(spore_type_hash_bytes.raw_data());
 
+    let spore_input: Vec<_> = QueryIter::new(load_cell_type, Input)
+        .filter(|script_opt| match script_opt {
+            None => false,
+            Some(script) => script.calc_script_hash() == spore_type_hash
+        })
+        .collect();
+    if spore_input.len() == 0 {
+        return Err(Error::ZeroInputSporeMelt);
+    }
+
     let spore_output: Vec<_> = QueryIter::new(load_cell_type, Output)
         .filter(|script_opt| match script_opt {
             None => false,
@@ -53,17 +63,7 @@ pub fn main() -> Result<(), Error> {
         })
         .collect();
     if spore_output.len() > 0 {
-        return Err(Error::NotMeltOperation);
-    }
-
-    let spore_input: Vec<_> = QueryIter::new(load_cell_type, Input)
-        .filter(|script_opt| match script_opt {
-            None => false,
-            Some(script) => script.calc_script_hash() == spore_type_hash
-        })
-        .collect();
-    if spore_input.len() != 0 {
-        return Err(Error::NotMeltOperation);
+        return Err(Error::NonZeroOutputSporeMelt);
     }
 
     return Ok(());
