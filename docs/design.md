@@ -4,20 +4,24 @@
 
 Spore Protocol 限制内容体积为500kb，而 Video Spore Protocol 旨在在不改变 Spore Protocol 的理念和核心设计下，突破内容的体积限制，实现更大容量内容的支持，为用户提供更丰富的体验和更广泛的内容选择。
 
+Spore Protocol 对内容的体积限制是最大 500kb 的原因将内容存放于 **Spore Cell**，以及 CKB 的区块大小限制为 597kb。
+
+> 其实我也喜欢放在同一个 **Spore Cell**，这样设计很简洁 :D
+
 ## Glossary
 
-- **Spore Cell**
-- **Spore Content**: `SporeCell.content-type | SporeCell.content`
-- **Spore Segment**
+- **Spore Cell**: Spore Cell 是 Spore 资产的唯一标识
+- **Spore Content**: `content.content-type + hash(content)`
 - **Spore Segment Cell**
 
 ## Design
 
-Spore Protocol 对内容的体积限制是最大 500kb，该限制的原因 Spore protocol 将内容存放于 **Spore Cell**，以及 CKB 的区块大小限制为 597kb。
-
-**Spore Content** 从 **Spore Cell** 中剥离出来，存放于单独的 **Spore Segment Cell**，如果内容的体积比较大，可以切分成多个 **Spore Segment Cells**；**Spore Cell** 只记录完整内容的哈希值，而 **Spore Segment Cell** 在 `lock.args` 里记录 **Spore Cell** 的 `type_hash`（note: `type_hash`已然覆盖了 Spore ID），用以构建绑定关系。
+将 **Spore Content** 从 **Spore Cell** 中剥离出来，存放于单独的 **Spore Segment Cell**，如果内容的体积比较大，可以切分成多个 **Spore Segment Cells**；**Spore Cell** 只记录完整内容的哈希值，而 **Spore Segment Cell** 在 `lock.args` 里记录 **Spore Cell** 的 `type_hash`（note: `type_hash`已然覆盖了 Spore ID），用以构建绑定关系。
 
 链上通过新增 **Spore Segment Cell** 以及将 **Spore Content** 的单独存放，达到解耦 **Spore Cell** 和 **Spore Content** 的目的，使得 Spore 的资产内容可以突破 500KB 的限制。
+
+<img width="1100" alt="image" src="https://github.com/video-spore-protocol/video-spore-protocol/assets/1870648/6cdf6580-820d-47f4-9468-bb820d6945d6">
+
 
 链下 dApp 服务器在检索到 **Spore Cell** 时，根据 `mutant` 字段判断其是否指定 Video Spore Protocol。对于指定了 Video Spore Protocol 的 **Spore Cell**，服务器根据其 `type_hash` 索引出 **Spore Segment Cell**s，并按序拼接出完整的资产内容。
 
