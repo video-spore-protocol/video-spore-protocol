@@ -62,7 +62,7 @@ dApp 根据 **Spore Cell** 的 `mutant` 字段判断是否为 Video Spore Protoc
 我们将通过 Spore mutant 特性来保证该承诺。
 
 ```rust
-VideoMutant = Cell {
+VideoSporeMutant = Cell {
     output_data: <
         func main() {
             if operation == "mint"     { exit(0) }
@@ -89,7 +89,7 @@ VideoMutant = Cell {
 
 SporeCell = Cell {
     output_data:
-        content_type: application/spore+video;[]mutant=<VideoSporeMutant>
+        content_type: video/mp4+spore;[]mutant=<VideoSporeMutant>
              content: <data_hash>
     type:
       hash_type: "data1"
