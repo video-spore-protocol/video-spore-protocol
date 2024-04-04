@@ -20,7 +20,11 @@ Spore Protocol 对内容的体积限制是最大 500kb 的原因将内容存放�
 
 ## Design
 
-### 1. Decouple identity cell and storage cell
+### 1. Decouple identity and storage
+
+创建一种新的 cell 类型，**Spore Segment Cell**，用于存储 Spore 的内容数据。
+
+解耦方式如下。
 
 **Spore Cell** 只记录完整内容的哈希值；
 
@@ -28,7 +32,14 @@ Spore Protocol 对内容的体积限制是最大 500kb 的原因将内容存放�
 
 链上通过新增 **Spore Segment Cell** 以及将 **Spore Content** 的单独存放，达到解耦 **Spore Cell** 和 **Spore Content** 的目的，使得 Spore 的资产内容可以突破 500KB 的限制。
 
-### 2. Binding identity cell and storage
+**Spore Cell** is Spore identify, **Spore Segment Cell**s is Spore storage.
+
+### 2. Binding identity and storage
+
+
+<!-- 解耦了 spore 的标识和存储，那就引入了一个问题，就是标识和存储的 cells 是没有硬性联系的，接下来我们要想办法构建起这两者的硬性联系，保证 Spore 的原子性。  -->
+
+<!-- 即可一个 Spore 是存在的，那么它的标识 cell 和存储 cell 都必须存在在链上； 一个 Spore 被销毁了，那么他的标识 cell 和存储 cell 都必须一同被销毁。  -->
 
 **Spore Cell** 基于 Spore Mutant 机制，即 **Spore Video Mutant**，
 - 要求 transfer spore 时所有对应的 **Spore Segment Cell**s 都未被消费（所以 transfer 交易必须将 **Spore Segment Cell**s 包括进 `cellDeps`）；
